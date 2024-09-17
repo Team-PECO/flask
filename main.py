@@ -1,62 +1,47 @@
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse
-# fastapi 설정
-from fastapi import FastAPI
-app = FastAPI()
+from flask import Flask, send_from_directory, send_file, jsonify
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app = Flask(__name__, static_folder='static')
 
-origins = [
-	"*"
-]
+@app.route("/")
+def read_root():
+    return send_from_directory(app.static_folder, 'index.html')
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+@app.route("/control")
+def read_control():
+    return send_from_directory(app.static_folder, 'control.html')
 
-@app.get("/", response_class=HTMLResponse)
-async def read_root():
-    with open("static/index.html", encoding='utf-8') as f:
-        content = f.read()
-    return HTMLResponse(content=content)
+@app.route("/map")
+def read_map():
+    return send_from_directory(app.static_folder, 'map.html')
 
-@app.get("/control", response_class=HTMLResponse)
-async def read_control():
-    with open("static/control.html", encoding='utf-8') as f:
-        content = f.read()
-    return HTMLResponse(content=content)
-
-@app.get("/map", response_class=HTMLResponse)
-async def read_map():
-    with open("static/map.html", encoding='utf-8') as f:
-        content = f.read()
-    return HTMLResponse(content=content)
-
-@app.get("/up")
-async def up():
+@app.route("/up")
+def up():
     print("up")
-    return "up"
+    return jsonify(message="up")
 
-@app.get("/down")
-async def down():
+@app.route("/down")
+def down():
     print("down")
-    return "down"
+    return jsonify(message="down")
 
-@app.get("/right")
-async def right():
+@app.route("/right")
+def right():
     print("right")
-    return "right"
+    return jsonify(message="right")
 
-@app.get("/left")
-async def left():
+@app.route("/left")
+def left():
     print("left")
-    return "left"
+    return jsonify(message="left")
+
+# IP 주소를 저장한 파일을 보내주는 엔드포인트
+@app.route("/get-ip")
+def get_ip():
+    try:
+        # static 폴더 내에 있는 ip.txt 파일을 클라이언트에 전송
+        return send_file('static/ip.txt')
+    except FileNotFoundError:
+        return jsonify(error="IP file not found"), 404
 
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000, debug=True)
+    app.run(host="0.0.0.0", port=8000, debug=True)
