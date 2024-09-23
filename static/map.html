@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>층별 안내도</title>
     <style>
+        div {
+            font-size: 2.2vw;
+        }
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -43,7 +46,8 @@
             display: flex;
             justify-content: center;
             width: 90%;
-            height: 70%;
+            height: 40%;
+            padding-top: 25%; /* 4:3 aspect ratio (3/4 = 0.75) */
             position: absolute;
             top: 20%;
         }
@@ -90,6 +94,7 @@
         <div class="header">
             <!-- <img src="/api/placeholder/25/32" alt="뒤로가기" class="arrow" onclick="goBack()"> -->
             <h1 onclick="goBack()" class="title">출발지를 선택해주세요</h1>
+            <h1 hidden onclick="goBack()" class="title arrive">도착지를 선택해주세요</h1>
         </div>
         <div class="floor-plan">
             <div class="column left-column">
@@ -126,6 +131,15 @@
         function selectRoom(roomName) {
             console.log(`${roomName} 선택됨`);
             alert(`${roomName}을(를) 선택하셨습니다.`);
+            alert(document.querySelector('.title').hidden)
+            if (document.querySelector('.title').hidden) {
+                window.location.href = '/'
+            }
+            else {
+                document.querySelectorAll('.title').forEach((title, index) => {
+                    title.hidden = !title.hidden;
+                });
+            }
         }
 
         function goBack() {
